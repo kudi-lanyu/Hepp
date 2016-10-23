@@ -311,6 +311,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         int pm25_datav_value = Integer.parseInt(todayWeather.getPm25());
         if(pm25_datav_value>=0 && pm25_datav_value <=50){
             pmImg.setImageResource(R.drawable.biz_plugin_weather_0_50);
+
         }else if (pm25_datav_value>=51 && pm25_datav_value <=100){
             pmImg.setImageResource(R.drawable.biz_plugin_weather_51_100);
         }else if (pm25_datav_value>=101 && pm25_datav_value <=150){
