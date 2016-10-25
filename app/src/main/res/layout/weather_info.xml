@@ -163,7 +163,7 @@
                             android:singleLine="true"
                             android:text="260"
                             android:textColor="@android:color/white"
-                            android:textSize="30.0sp" />
+                            android:textSize="20.0sp" />
                     </LinearLayout>
                     <!--PM2.5图片-->
                     <ImageView
@@ -223,7 +223,7 @@
                     android:singleLine="true"
                     android:text="-4℃ - -8℃"
                     android:textColor="@android:color/white"
-                    android:textSize="30.0sp" />
+                    android:textSize="20.0sp" />
                 <!--天气情况-->
                 <TextView
                     android:id="@+id/climate"
