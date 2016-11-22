@@ -68,7 +68,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
             Toast.makeText(MainActivity.this, "网络挂了！", Toast.LENGTH_LONG).show();
         }
 
-        mCitySelect = (ImageView)findViewById(R.id.title_city_manager);
+        mCitySelect = (ImageView) findViewById(R.id.title_city_manager);
         mCitySelect.setOnClickListener(this);
 
         initView();
@@ -106,10 +106,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
     @Override
     public void onClick(View view) {
-        if (view.getId() == R.id.title_city_manager){
-            Intent i = new Intent(this,SelectCity.class);
+        if (view.getId() == R.id.title_city_manager) {
+            Intent i = new Intent(this, SelectCity.class);
             //startActivity(i);
-            startActivityForResult(i,1);
+            startActivityForResult(i, 1);
         }
 
         if (view.getId() == R.id.title_update_btn) {
@@ -127,10 +127,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
         }
     }
 
-    protected void onActivityResult(int requestCode,int resultCode,Intent data){
-        if(requestCode == 1 && resultCode == RESULT_OK){
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1 && resultCode == RESULT_OK) {
             String newCityCode = data.getStringExtra("cityCode");
-            Log.d("myWeather","选择的城市代码为"+newCityCode);
+            Log.d("myWeather", "选择的城市代码为" + newCityCode);
 
             if (NetUtil.getNetworkState(this) != NetUtil.NETWORN_NONE) {
                 Log.d("myWeather", "网络OK！");
@@ -308,22 +308,26 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
         //if语句判断相应指标，set不同的icon地址
         // pmImg.setImageResource(对应图片id);
-        int pm25_datav_value = Integer.parseInt(todayWeather.getPm25());
-        if(pm25_datav_value>=0 && pm25_datav_value <=50){
-            pmImg.setImageResource(R.drawable.biz_plugin_weather_0_50);
+        if (todayWeather.getPm25() != null) {
+            int pm25_datav_value = Integer.valueOf(todayWeather.getPm25());
+            if (pm25_datav_value >= 0 && pm25_datav_value <= 50) {
+                pmImg.setImageResource(R.drawable.biz_plugin_weather_0_50);
 
-        }else if (pm25_datav_value>=51 && pm25_datav_value <=100){
-            pmImg.setImageResource(R.drawable.biz_plugin_weather_51_100);
-        }else if (pm25_datav_value>=101 && pm25_datav_value <=150){
-            pmImg.setImageResource(R.drawable.biz_plugin_weather_101_150);
-        }else if (pm25_datav_value>=151 && pm25_datav_value <=200){
-            pmImg.setImageResource(R.drawable.biz_plugin_weather_151_200);
-        }else if (pm25_datav_value>=201 && pm25_datav_value <=300){
-            pmImg.setImageResource(R.drawable.biz_plugin_weather_201_300);
+            } else if (pm25_datav_value >= 51 && pm25_datav_value <= 100) {
+                pmImg.setImageResource(R.drawable.biz_plugin_weather_51_100);
+            } else if (pm25_datav_value >= 101 && pm25_datav_value <= 150) {
+                pmImg.setImageResource(R.drawable.biz_plugin_weather_101_150);
+            } else if (pm25_datav_value >= 151 && pm25_datav_value <= 200) {
+                pmImg.setImageResource(R.drawable.biz_plugin_weather_151_200);
+            } else if (pm25_datav_value >= 201 && pm25_datav_value <= 300) {
+                pmImg.setImageResource(R.drawable.biz_plugin_weather_201_300);
+            }
+        }else{
+            pmImg.setImageResource(R.drawable.biz_plugin_weather_0_50);
         }
 
 
-        switch (todayWeather.getType().toString()){
+        switch (todayWeather.getType().toString()) {
             case "暴雪":
                 weatherImg.setImageResource(R.drawable.biz_plugin_weather_baoxue);
                 break;
@@ -429,8 +433,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
 //        }else if (todayWeather.getType().contentEquals("中雨")){
 //            weatherImg.setImageResource(R.drawable.biz_plugin_weather_zhenyu);
 //        }
-
-
 
 
         Toast.makeText(MainActivity.this, "更新成功", Toast.LENGTH_SHORT).show();
