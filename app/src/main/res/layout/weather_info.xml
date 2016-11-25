@@ -43,6 +43,8 @@
             android:layout_gravity="center"
             android:src="@drawable/title_update" />
 
+        <include layout="@layout/title_update_progress"/>
+
         <ImageView
             android:id="@+id/title_share"
             android:layout_width="45.0dip"
@@ -58,6 +60,9 @@
             android:src="@drawable/base_action_bar_action_city" />
 
     </RelativeLayout>
+
+    #!--进度条
+    <include layout="@layout/progressbar"/>
 
     <LinearLayout
         android:layout_width="fill_parent"

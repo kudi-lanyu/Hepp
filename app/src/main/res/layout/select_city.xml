@@ -40,6 +40,9 @@
                 android:gravity="center" />
         </RelativeLayout>
 
+        #!--添加城市搜索框
+        <include layout="@layout/search_city" />
+
         <RelativeLayout
             android:layout_width="fill_parent"
             android:layout_height="fill_parent">
