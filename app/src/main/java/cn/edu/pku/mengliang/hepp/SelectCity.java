@@ -2,6 +2,7 @@ package cn.edu.pku.mengliang.hepp;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -79,6 +80,12 @@ public class SelectCity extends Activity implements View.OnClickListener{
             case R.id.title_back:
                 Intent i = new Intent();
                 i.putExtra("cityCode",SelectedId);
+                SharedPreferences sharedPreferences = getSharedPreferences("config",MODE_PRIVATE);
+
+                if (SelectedId != null){
+                    sharedPreferences.edit().putString("main_city_code",SelectedId).commit();
+                }
+
                 setResult(RESULT_OK,i);
                 finish();
                 break;

@@ -3,10 +3,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <!--进度条-->
+    <include layout="@layout/progressbar" />
+
+    <!--顶部菜单栏-->
     <RelativeLayout
         android:id="@+id/title"
         android:layout_width="fill_parent"
         android:layout_height="45.0dip"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
         android:background="#ffcd2626"
         android:gravity="center_vertical">
 
@@ -41,9 +48,17 @@
             android:layout_height="45.0dip"
             android:layout_alignParentRight="true"
             android:layout_gravity="center"
-            android:src="@drawable/title_update" />
+            android:src="@drawable/title_update"
+            android:visibility="visible" />
 
-        <include layout="@layout/title_update_progress"/>
+        <!--<include layout="@layout/title_update_progress"/>-->
+        <ProgressBar
+            android:id="@+id/title_update_btn1"
+            style="@style/title_update_progressbar_style"
+            android:layout_width="45.0dip"
+            android:layout_height="45.0dip"
+            android:layout_alignParentRight="true"
+            android:visibility="gone" />
 
         <ImageView
             android:id="@+id/title_share"
@@ -60,10 +75,7 @@
             android:src="@drawable/base_action_bar_action_city" />
 
     </RelativeLayout>
-
-    #!--进度条
-    <include layout="@layout/progressbar"/>
-
+    <!--信息总部分-->
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
@@ -256,9 +268,21 @@
             </RelativeLayout>
         </RelativeLayout>
         <!--七日天气信息-->
+<RelativeLayout
+    android:id="@+id/week_weather"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <android.support.v4.view.ViewPager
+        android:id="@+id/week_weather_viewpager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
+
+    </android.support.v4.view.ViewPager>
+</RelativeLayout>
         <!--广告信息-->
 
     </LinearLayout>
+
 
 </RelativeLayout>

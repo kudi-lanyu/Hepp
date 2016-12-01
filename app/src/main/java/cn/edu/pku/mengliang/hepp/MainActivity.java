@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,6 +32,7 @@ import java.net.URL;
 
 
 import cn.edu.pku.mengliang.bean.TodayWeather;
+import cn.edu.pku.mengliang.guide.guide;
 import cn.edu.pku.mengliang.util.NetUtil;
 
 /**
@@ -39,7 +41,10 @@ import cn.edu.pku.mengliang.util.NetUtil;
 public class MainActivity extends Activity implements View.OnClickListener {
     private static final int UPDATE_TODAY_WEATHER = 1;
 
+    private static boolean is_First_use = true;
+
     private ImageView mUpdateBtn;
+    private ProgressBar mUpdateBtnProgress;
 
     private ImageView mCitySelect;
 
@@ -51,6 +56,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
             switch (msg.what) {
                 case UPDATE_TODAY_WEATHER:
                     updateTodayWeather((TodayWeather) msg.obj);
+                    mUpdateBtn.setVisibility(View.VISIBLE);
+                    mUpdateBtnProgress.setVisibility(View.GONE);
                     break;
                 default:
                     break;
@@ -64,9 +71,22 @@ public class MainActivity extends Activity implements View.OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.weather_info);
+//        setTitle("myweather");
+
+        SharedPreferences sharedPreferences = getSharedPreferences("first_about_guide",MainActivity.MODE_PRIVATE);
+
+        is_First_use = sharedPreferences.getBoolean("is_First_use",true);//获取is_First_use的值，若没有这个key的内容则返回一个默认的boolean
+        if (is_First_use){
+            sharedPreferences.edit().putBoolean("is_First_use",false).commit();
+            Intent intent = new Intent(this,guide.class);
+            startActivity(intent);
+        }
+
+
 
         mUpdateBtn = (ImageView) findViewById(R.id.title_update_btn);
         mUpdateBtn.setOnClickListener(this);
+        mUpdateBtnProgress = (ProgressBar) findViewById(R.id.title_update_btn1);
 
 
         if (NetUtil.getNetworkState(this) != NetUtil.NETWORN_NONE) {
@@ -125,7 +145,11 @@ public class MainActivity extends Activity implements View.OnClickListener {
         if (view.getId() == R.id.title_update_btn) {
             SharedPreferences sharedPreferences = getSharedPreferences("config", MODE_PRIVATE);
             //考虑更新后的cityCode
-            String cityCode = sharedPreferences.getString("main_city_code","101010100");
+            String cityCode = sharedPreferences.getString("main_city_code", "101010100");
+            sharedPreferences.edit().putString("main_city_code",cityCode).commit();
+
+            mUpdateBtn.setVisibility(View.INVISIBLE);
+            mUpdateBtnProgress.setVisibility(View.VISIBLE);
 
             Log.d("myWeather", cityCode);
 
@@ -140,9 +164,15 @@ public class MainActivity extends Activity implements View.OnClickListener {
         }
     }
 
+    //用来处理城市选择界面返回的结果
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1 && resultCode == RESULT_OK) {
             String newCityCode = data.getStringExtra("cityCode");
+            if (newCityCode == null){
+                SharedPreferences sharedPreferences = getSharedPreferences("config",MODE_PRIVATE);
+                newCityCode = sharedPreferences.getString("main_city_code","101010100");
+                sharedPreferences.edit().putString("main_city_code",newCityCode).commit();
+            }
             Log.d("myWeather", "选择的城市代码为" + newCityCode);
 
             if (NetUtil.getNetworkState(this) != NetUtil.NETWORN_NONE) {
@@ -205,6 +235,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 }
             }
         }).start();
+
     }
 
     private TodayWeather parseXML(String xmldata) {
@@ -304,8 +335,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
         return todayWeather;
     }
+
 
     public void updateTodayWeather(TodayWeather todayWeather) {
         city_name_Tv.setText(todayWeather.getCity() + "天气");
