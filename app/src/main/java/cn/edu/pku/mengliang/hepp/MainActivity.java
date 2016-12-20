@@ -1,19 +1,16 @@
 package cn.edu.pku.mengliang.hepp;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.animation.Animation;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,8 +26,13 @@ import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 
+import cn.edu.pku.mengliang.MyAdapter.ViewPagerAdapter_forecastWeather;
+import cn.edu.pku.mengliang.MyAdapter.ViewPagerAdapter_guide;
+import cn.edu.pku.mengliang.bean.ForecastWeather;
 import cn.edu.pku.mengliang.bean.TodayWeather;
 import cn.edu.pku.mengliang.guide.guide;
 import cn.edu.pku.mengliang.util.NetUtil;
@@ -44,6 +46,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private static boolean is_First_use = true;
 
     private ImageView mUpdateBtn;
+    private ImageView shareBtn;
     private ProgressBar mUpdateBtnProgress;
 
     private ImageView mCitySelect;
@@ -51,11 +54,35 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private TextView cityTv, timeTv, humidityTv, weekTv, wenduTv, pmDataTv, pmQualityTv, temperatureTv, climateTv, windTv, city_name_Tv;
     private ImageView weatherImg, pmImg;
 
+    //forecast
+    private TextView week_date1, week_temperture1, week_weather1, week_windTv1;
+    private TextView week_date2, week_temperture2, week_weather2, week_windTv2;
+    private TextView week_date3, week_temperture3, week_weather3, week_windTv3;
+    //forecast
+    private TextView week_date4, week_temperture4, week_weather4, week_windTv4;
+    private TextView week_date5, week_temperture5, week_weather5, week_windTv5;
+    private TextView week_date6, week_temperture6, week_weather6, week_windTv6;
+
+    //adapter for forecastWeather
+    private ViewPager vp;
+    private ViewPagerAdapter_forecastWeather vpAdapter;
+    private List<View> views;
+    private ImageView[] dots;
+    private int[] ids = {R.id.ui_iv1, R.id.ui_iv2};
+
+
+    //ForecastWeather
+    List<ForecastWeather> forecastWeathers = new ArrayList<ForecastWeather>();
+
+
     private Handler mHandler = new Handler() {
         public void handleMessage(android.os.Message msg) {
             switch (msg.what) {
                 case UPDATE_TODAY_WEATHER:
                     updateTodayWeather((TodayWeather) msg.obj);
+                    updateForecastWeather(forecastWeathers);
+                    //添加更新预测天气
+
                     mUpdateBtn.setVisibility(View.VISIBLE);
                     mUpdateBtnProgress.setVisibility(View.GONE);
                     break;
@@ -73,15 +100,17 @@ public class MainActivity extends Activity implements View.OnClickListener {
         setContentView(R.layout.weather_info);
 //        setTitle("myweather");
 
-        SharedPreferences sharedPreferences = getSharedPreferences("first_about_guide",MainActivity.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = getSharedPreferences("first_about_guide", MainActivity.MODE_PRIVATE);
 
-        is_First_use = sharedPreferences.getBoolean("is_First_use",true);//获取is_First_use的值，若没有这个key的内容则返回一个默认的boolean
-        if (is_First_use){
-            sharedPreferences.edit().putBoolean("is_First_use",false).commit();
-            Intent intent = new Intent(this,guide.class);
+        is_First_use = sharedPreferences.getBoolean("is_First_use", true);//获取is_First_use的值，若没有这个key的内容则返回一个默认的boolean
+        if (is_First_use) {
+            sharedPreferences.edit().putBoolean("is_First_use", false).commit();
+            Intent intent = new Intent(this, guide.class);
             startActivity(intent);
         }
 
+        shareBtn = (ImageView) findViewById(R.id.title_share);
+        shareBtn.setOnClickListener(this);
 
 
         mUpdateBtn = (ImageView) findViewById(R.id.title_update_btn);
@@ -101,8 +130,68 @@ public class MainActivity extends Activity implements View.OnClickListener {
         mCitySelect.setOnClickListener(this);
 
         initView();
+
+        initWeekViews();
+
+        initForecastDate();
+
+        initdots();
     }
 
+    private void initForecastDate(){
+        week_date1 = (TextView)views.get(0).findViewById(R.id.week_date);
+        week_temperture1 =  (TextView)views.get(0).findViewById(R.id.week_temperature);
+        week_weather1 = (TextView)views.get(0).findViewById(R.id.week_climate);
+        week_windTv1 = (TextView)views.get(0).findViewById(R.id.week_wind);
+
+        week_date2 = (TextView)views.get(0).findViewById(R.id.week_date2);
+        week_temperture2 =  (TextView)views.get(0).findViewById(R.id.week_temperature2);
+        week_weather2 = (TextView)views.get(0).findViewById(R.id.week_climate2);
+        week_windTv2 = (TextView)views.get(0).findViewById(R.id.week_wind2);
+
+        week_date3 = (TextView)views.get(0).findViewById(R.id.week_date3);
+        week_temperture3 =  (TextView)views.get(0).findViewById(R.id.week_temperature3);
+        week_weather3 = (TextView)views.get(0).findViewById(R.id.week_climate3);
+        week_windTv3 = (TextView)views.get(0).findViewById(R.id.week_wind3);
+
+        week_date4 = (TextView)views.get(1).findViewById(R.id.week_date4);
+        week_temperture4 =  (TextView)views.get(1).findViewById(R.id.week_temperature4);
+        week_weather4 = (TextView)views.get(1).findViewById(R.id.week_climate4);
+        week_windTv4 = (TextView)views.get(1).findViewById(R.id.week_wind4);
+
+        week_date5 = (TextView)views.get(1).findViewById(R.id.week_date5);
+        week_temperture5 =  (TextView)views.get(1).findViewById(R.id.week_temperature5);
+        week_weather5 = (TextView)views.get(1).findViewById(R.id.week_climate5);
+        week_windTv5 = (TextView)views.get(1).findViewById(R.id.week_wind5);
+
+        week_date6 = (TextView)views.get(1).findViewById(R.id.week_date6);
+        week_temperture6 =  (TextView)views.get(1).findViewById(R.id.week_temperature6);
+        week_weather6 = (TextView)views.get(1).findViewById(R.id.week_climate6);
+        week_windTv6 = (TextView)views.get(1).findViewById(R.id.week_wind6);
+
+    }
+
+    private void initdots() {
+        dots = new ImageView[views.size()];
+        for (int i = 0; i < views.size(); i++) {
+            dots[i] = (ImageView) findViewById(ids[i]);
+        }
+    }
+
+    private void initWeekViews() {
+        //根据已经获取的forecastWeather信息更新布局文件中的值
+        updateForecastWeather(forecastWeathers);
+
+        LayoutInflater inflater = LayoutInflater.from(this);
+        views = new ArrayList<View>();
+        views.add(inflater.inflate(R.layout.forecastweather1, null));
+        views.add(inflater.inflate(R.layout.forecastweather2, null));
+
+        vpAdapter = new ViewPagerAdapter_forecastWeather(views, this);
+        vp = (ViewPager) findViewById(R.id.week_viewpager);
+        vp.setAdapter(vpAdapter);
+
+    }
 
     void initView() {
         cityTv = (TextView) findViewById(R.id.city);
@@ -134,6 +223,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         windTv.setText("N/A");
     }
 
+
     @Override
     public void onClick(View view) {
         if (view.getId() == R.id.title_city_manager) {
@@ -141,12 +231,19 @@ public class MainActivity extends Activity implements View.OnClickListener {
             //startActivity(i);
             startActivityForResult(i, 1);
         }
+        //分享文本,模拟器中只能支持短信，真机可以多些分享选择
+        if (view.getId() == R.id.title_share) {
+            Intent intent = new Intent(Intent.ACTION_SEND);
+            intent.setType("text/plain");
+            intent.putExtra(Intent.EXTRA_STREAM, "hello world");
+            startActivity(Intent.createChooser(intent, "share text to ..."));
+        }
 
         if (view.getId() == R.id.title_update_btn) {
             SharedPreferences sharedPreferences = getSharedPreferences("config", MODE_PRIVATE);
             //考虑更新后的cityCode
             String cityCode = sharedPreferences.getString("main_city_code", "101010100");
-            sharedPreferences.edit().putString("main_city_code",cityCode).commit();
+            sharedPreferences.edit().putString("main_city_code", cityCode).commit();
 
             mUpdateBtn.setVisibility(View.INVISIBLE);
             mUpdateBtnProgress.setVisibility(View.VISIBLE);
@@ -157,6 +254,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
             if (NetUtil.getNetworkState(this) != NetUtil.NETWORN_NONE) {
                 Log.d("myWeather", "网络OK！");
                 queryWeatherCode(cityCode);
+
             } else {
                 Log.d("myWeather", "网络挂了！");
                 Toast.makeText(MainActivity.this, "网络挂了！", Toast.LENGTH_LONG).show();
@@ -168,10 +266,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1 && resultCode == RESULT_OK) {
             String newCityCode = data.getStringExtra("cityCode");
-            if (newCityCode == null){
-                SharedPreferences sharedPreferences = getSharedPreferences("config",MODE_PRIVATE);
-                newCityCode = sharedPreferences.getString("main_city_code","101010100");
-                sharedPreferences.edit().putString("main_city_code",newCityCode).commit();
+            if (newCityCode == null) {
+                SharedPreferences sharedPreferences = getSharedPreferences("config", MODE_PRIVATE);
+                newCityCode = sharedPreferences.getString("main_city_code", "101010100");
+                sharedPreferences.edit().putString("main_city_code", newCityCode).commit();
             }
             Log.d("myWeather", "选择的城市代码为" + newCityCode);
 
@@ -224,8 +322,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
                         msg.obj = todayWeather;
                         mHandler.sendMessage(msg);
                     }
-
-                    parseXML(responseStr);
+//
+//                    parseXML(responseStr);
                 } catch (Exception e) {
                     e.printStackTrace();
                 } finally {
@@ -241,12 +339,15 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private TodayWeather parseXML(String xmldata) {
 
         TodayWeather todayWeather = null;
+        ForecastWeather forecastWeather = null;
+        forecastWeathers.clear();
         int fengxiangCount = 0;
         int fengliCount = 0;
         int dateCount = 0;
         int highCount = 0;
         int lowCount = 0;
         int typeCount = 0;
+
         try {
             XmlPullParserFactory fac = XmlPullParserFactory.newInstance();
             XmlPullParser xmlPullParser = fac.newPullParser();
@@ -256,6 +357,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
 
             while (eventType != XmlPullParser.END_DOCUMENT) {
+                String tagName = xmlPullParser.getName();//节点名称
                 switch (eventType) {
                     //判断当前事件是否为文档开始事件
                     case XmlPullParser.START_DOCUMENT:
@@ -290,41 +392,112 @@ public class MainActivity extends Activity implements View.OnClickListener {
                                 eventType = xmlPullParser.next();
                                 todayWeather.setQuality(xmlPullParser.getText());
                                 //Log.d("myWeather", "quality:      " + xmlPullParser.getText());
-                            } else if (xmlPullParser.getName().equals("fengxiang") && fengxiangCount == 0) {
-                                eventType = xmlPullParser.next();
-                                todayWeather.setFengxiang(xmlPullParser.getText());
-                                //Log.d("myWeather", "fengxiang:      " + xmlPullParser.getText());
-                                fengxiangCount++;
-                            } else if (xmlPullParser.getName().equals("fengli") && fengliCount == 0) {
-                                eventType = xmlPullParser.next();
-                                todayWeather.setFengli(xmlPullParser.getText());
-                                //Log.d("myWeather", "fengli:      " + xmlPullParser.getText());
-                                fengliCount++;
-                            } else if (xmlPullParser.getName().equals("date") && dateCount == 0) {
-                                eventType = xmlPullParser.next();
-                                todayWeather.setDate(xmlPullParser.getText());
-                                //Log.d("myWeather", "date:      " + xmlPullParser.getText());
-                                dateCount++;
-                            } else if (xmlPullParser.getName().equals("high") && highCount == 0) {
-                                eventType = xmlPullParser.next();
-                                todayWeather.setHigh(xmlPullParser.getText());
-                                // Log.d("myWeather", "high:      " + xmlPullParser.getText());
-                                highCount++;
-                            } else if (xmlPullParser.getName().equals("low") && lowCount == 0) {
-                                eventType = xmlPullParser.next();
-                                todayWeather.setLow(xmlPullParser.getText());
-                                // Log.d("myWeather", "low:      " + xmlPullParser.getText());
-                                lowCount++;
-                            } else if (xmlPullParser.getName().equals("type") && typeCount == 0) {
-                                eventType = xmlPullParser.next();
-                                todayWeather.setType(xmlPullParser.getText());
-                                // Log.d("myWeather", "type:      " + xmlPullParser.getText());
-                                typeCount++;
+                            } else if (xmlPullParser.getName().equals("weather")) {
+                                forecastWeather = new ForecastWeather();
+                            } else if (xmlPullParser.getName().equals("fengxiang")) {
+                                if (fengxiangCount == 0) {
+                                    eventType = xmlPullParser.next();
+                                    todayWeather.setFengxiang(xmlPullParser.getText());
+                                    //Log.d("myWeather", "fengxiang:      " + xmlPullParser.getText());
+                                    fengxiangCount++;
+                                } else if (fengxiangCount == 1) {
+                                    fengxiangCount++;
+                                } else if (fengxiangCount != 0 && fengxiangCount % 2 == 0) {
+                                    //forecastWeather.setDay_fengxiang(xmlPullParser.nextText());
+                                    eventType = xmlPullParser.next();
+                                    forecastWeather.setDay_fengxiang(xmlPullParser.getText());
+                                    fengxiangCount++;
+                                } else if (fengxiangCount != 1 && fengxiangCount % 2 == 1) {
+                                    //forecastWeather.setDay_fengxiang(xmlPullParser.nextText());
+                                    eventType = xmlPullParser.next();
+                                    forecastWeather.setNight_fengli(xmlPullParser.getText());
+                                    fengxiangCount++;
+                                }
+                            } else if (xmlPullParser.getName().equals("fengli")) {
+                                if (fengliCount == 0) {
+                                    eventType = xmlPullParser.next();
+                                    todayWeather.setFengli(xmlPullParser.getText());
+                                    //Log.d("myWeather", "fengli:      " + xmlPullParser.getText());
+                                    fengliCount++;
+                                } else if (fengliCount == 1) {
+                                    fengliCount++;
+                                } else if (fengliCount != 0 && fengliCount % 2 == 0) {
+                                    //forecastWeather.setDay_fengxiang(xmlPullParser.nextText());
+                                    eventType = xmlPullParser.next();
+                                    forecastWeather.setDay_fengli(xmlPullParser.getText());
+                                    fengliCount++;
+                                } else if (fengliCount != 1 && fengliCount % 2 == 1) {
+                                    //forecastWeather.setDay_fengxiang(xmlPullParser.nextText());
+                                    eventType = xmlPullParser.next();
+                                    forecastWeather.setNight_fengli(xmlPullParser.getText());
+                                    fengliCount++;
+                                }
+                            } else if (xmlPullParser.getName().equals("date")) {
+                                if (dateCount == 0) {
+                                    eventType = xmlPullParser.next();
+                                    todayWeather.setDate(xmlPullParser.getText());
+                                    //Log.d("myWeather", "fengxiang:      " + xmlPullParser.getText());
+                                    dateCount++;
+                                } else {
+                                    //forecastWeather.setDay_fengxiang(xmlPullParser.nextText());
+                                    eventType = xmlPullParser.next();
+                                    forecastWeather.setDate(xmlPullParser.getText());
+                                    dateCount++;
+                                }
+                            } else if (xmlPullParser.getName().equals("high")) {
+                                if (highCount == 0) {
+                                    eventType = xmlPullParser.next();
+                                    todayWeather.setHigh(xmlPullParser.getText());
+                                    //Log.d("myWeather", "fengxiang:      " + xmlPullParser.getText());
+                                    highCount++;
+                                } else {
+                                    //forecastWeather.setDay_fengxiang(xmlPullParser.nextText());
+                                    eventType = xmlPullParser.next();
+                                    forecastWeather.setHigh_temperture(xmlPullParser.getText());
+                                    highCount++;
+                                }
+                            } else if (xmlPullParser.getName().equals("low")) {
+                                if (lowCount == 0) {
+                                    eventType = xmlPullParser.next();
+                                    todayWeather.setLow(xmlPullParser.getText());
+                                    //Log.d("myWeather", "fengxiang:      " + xmlPullParser.getText());
+                                    lowCount++;
+                                } else {
+                                    //forecastWeather.setDay_fengxiang(xmlPullParser.nextText());
+                                    eventType = xmlPullParser.next();
+                                    forecastWeather.setLow_temperture(xmlPullParser.getText());
+                                    lowCount++;
+                                }
+                            } else if (xmlPullParser.getName().equals("type")) {
+                                if (typeCount == 0) {
+                                    eventType = xmlPullParser.next();
+                                    todayWeather.setType(xmlPullParser.getText());
+                                    //Log.d("myWeather", "fengli:      " + xmlPullParser.getText());
+                                    typeCount++;
+                                } else if (typeCount == 1) {
+                                    typeCount++;
+                                } else if (typeCount != 0 && typeCount % 2 == 0) {
+                                    //forecastWeather.setDay_fengxiang(xmlPullParser.nextText());
+                                    eventType = xmlPullParser.next();
+                                    forecastWeather.setDay_weather(xmlPullParser.getText());
+                                    typeCount++;
+                                } else if (typeCount != 1 && typeCount % 2 == 1) {
+                                    //forecastWeather.setDay_fengxiang(xmlPullParser.nextText());
+                                    eventType = xmlPullParser.next();
+                                    forecastWeather.setNight_weather(xmlPullParser.getText());
+                                    typeCount++;
+                                }
                             }
                         }
                         break;
                     //判断当前事件是否为标签元素结束事件
                     case XmlPullParser.END_TAG:
+                        //第一个为今日数据暂时不放在ForecastWeather对象中
+                        if (dateCount != 1 && xmlPullParser.getName().equals("weather")) {
+                            forecastWeathers.add(forecastWeather);
+                            Log.d("myWeather", forecastWeather.toString());
+                        }
+
                         break;
                 }
                 //进入下一个元素并触发相应事件
@@ -338,7 +511,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
         return todayWeather;
     }
-
 
     public void updateTodayWeather(TodayWeather todayWeather) {
         city_name_Tv.setText(todayWeather.getCity() + "天气");
@@ -441,5 +613,61 @@ public class MainActivity extends Activity implements View.OnClickListener {
         Toast.makeText(MainActivity.this, "更新成功", Toast.LENGTH_SHORT).show();
     }
 
+    private void updateForecastWeather(List<ForecastWeather> forecastWeatherList){
+//        //forecast
+//        private TextView week_date1, week_temperture1, week_weather1, week_windTv1;
+//        private TextView week_date2, week_temperture2, week_weather2, week_windTv2;
+//        private TextView week_date3, week_temperture3, week_weather3, week_windTv3;
+//        //forecast
+//        private TextView week_date4, week_temperture4, week_weather4, week_windTv4;
+//        private TextView week_date5, week_temperture5, week_weather5, week_windTv5;
+//        private TextView week_date6, week_temperture6, week_weather6, week_windTv6;
+        if (forecastWeatherList == null){
+            return;
+        }
 
+        int length = forecastWeatherList.size();
+
+        if (length>=1 && (forecastWeatherList.get(0)!= null)) {
+            Log.d("myWeather",forecastWeatherList.get(0).getDate());
+            Log.d("ddd",week_date1.toString());
+            week_date1.setText(forecastWeatherList.get(0).getDate());
+
+            week_temperture1.setText(forecastWeatherList.get(0).getHigh_temperture()+"~"+forecastWeatherList.get(0).getLow_temperture());
+            week_weather1.setText((forecastWeatherList.get(0).getDay_weather() == forecastWeatherList.get(0).getNight_weather() ? (forecastWeatherList.get(0).getDay_weather()):(forecastWeatherList.get(0).getDay_weather()+"转"+forecastWeatherList.get(0).getNight_weather())));
+            week_windTv1.setText((forecastWeatherList.get(0).getDay_fengli() == forecastWeatherList.get(0).getNight_fengli() ? (forecastWeatherList.get(0).getDay_fengli()):(forecastWeatherList.get(0).getDay_fengli() +"到" +forecastWeatherList.get(0).getNight_fengli())));
+        }
+        if (length>=2) {
+            week_date2.setText(forecastWeatherList.get(1).getDate());
+            week_temperture2.setText(forecastWeatherList.get(1).getHigh_temperture()+"~"+forecastWeatherList.get(1).getLow_temperture());
+            week_weather2.setText((forecastWeatherList.get(1).getDay_weather() == forecastWeatherList.get(1).getNight_weather() ? (forecastWeatherList.get(1).getDay_weather()):(forecastWeatherList.get(1).getDay_weather()+"转"+forecastWeatherList.get(1).getNight_weather())));
+            week_windTv2.setText((forecastWeatherList.get(1).getDay_fengli() == forecastWeatherList.get(1).getNight_fengli() ? (forecastWeatherList.get(1).getDay_fengli()):(forecastWeatherList.get(1).getDay_fengli() +"到" +forecastWeatherList.get(1).getNight_fengli())));
+        }
+        if (length>=3) {
+            week_date3.setText(forecastWeatherList.get(2).getDate());
+            week_temperture3.setText(forecastWeatherList.get(2).getHigh_temperture()+"~"+forecastWeatherList.get(2).getLow_temperture());
+            week_weather3.setText((forecastWeatherList.get(2).getDay_weather() == forecastWeatherList.get(2).getNight_weather() ? (forecastWeatherList.get(2).getDay_weather()):(forecastWeatherList.get(2).getDay_weather()+"转"+forecastWeatherList.get(2).getNight_weather())));
+            week_windTv3.setText((forecastWeatherList.get(2).getDay_fengli() == forecastWeatherList.get(2).getNight_fengli() ? (forecastWeatherList.get(2).getDay_fengli()):(forecastWeatherList.get(2).getDay_fengli() +"到" +forecastWeatherList.get(2).getNight_fengli())));
+        }
+        if (length>=4) {
+            week_date4.setText(forecastWeatherList.get(3).getDate());
+            week_temperture4.setText(forecastWeatherList.get(3).getHigh_temperture()+"~"+forecastWeatherList.get(3).getLow_temperture());
+            week_weather4.setText((forecastWeatherList.get(3).getDay_weather() == forecastWeatherList.get(3).getNight_weather() ? (forecastWeatherList.get(3).getDay_weather()):(forecastWeatherList.get(3).getDay_weather()+"转"+forecastWeatherList.get(3).getNight_weather())));
+            week_windTv4.setText((forecastWeatherList.get(3).getDay_fengli() == forecastWeatherList.get(3).getNight_fengli() ? (forecastWeatherList.get(3).getDay_fengli()):(forecastWeatherList.get(3).getDay_fengli() +"到" +forecastWeatherList.get(3).getNight_fengli())));
+        }
+        if (length>=5) {
+            week_date5.setText(forecastWeatherList.get(4).getDate());
+            week_temperture5.setText(forecastWeatherList.get(4).getHigh_temperture()+"~"+forecastWeatherList.get(4).getLow_temperture());
+            week_weather5.setText((forecastWeatherList.get(4).getDay_weather() == forecastWeatherList.get(4).getNight_weather() ? (forecastWeatherList.get(4).getDay_weather()):(forecastWeatherList.get(4).getDay_weather()+"转"+forecastWeatherList.get(4).getNight_weather())));
+            week_windTv5.setText((forecastWeatherList.get(4).getDay_fengli() == forecastWeatherList.get(4).getNight_fengli() ? (forecastWeatherList.get(4).getDay_fengli()):(forecastWeatherList.get(4).getDay_fengli() +"到" +forecastWeatherList.get(4).getNight_fengli())));
+        }
+        if (length>=6) {
+            week_date6.setText(forecastWeatherList.get(5).getDate());
+            week_temperture6.setText(forecastWeatherList.get(5).getHigh_temperture()+"~"+forecastWeatherList.get(5).getLow_temperture());
+            week_weather6.setText((forecastWeatherList.get(5).getDay_weather() == forecastWeatherList.get(5).getNight_weather() ? (forecastWeatherList.get(5).getDay_weather()):(forecastWeatherList.get(5).getDay_weather()+"转"+forecastWeatherList.get(5).getNight_weather())));
+            week_windTv6.setText((forecastWeatherList.get(5).getDay_fengli() == forecastWeatherList.get(5).getNight_fengli() ? (forecastWeatherList.get(5).getDay_fengli()):(forecastWeatherList.get(5).getDay_fengli() +"到" +forecastWeatherList.get(5).getNight_fengli())));
+        }
+
+
+    }
 }

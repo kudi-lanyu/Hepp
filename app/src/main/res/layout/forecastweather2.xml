@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/week_weather2"
+    android:layout_width="match_parent"
+    android:layout_height="fill_parent"
+    android:orientation="horizontal">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1">
+        <!--今日星期-->
+        <TextView
+            android:id="@+id/week_date4"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="5.0dip"
+            android:singleLine="true"
+            android:text="N/A"
+            android:textColor="@android:color/white"
+            android:textSize="20.0sp" />
+        <!--温度范围-->
+        <TextView
+            android:id="@+id/week_temperature4"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/week_date4"
+            android:layout_marginLeft="5.0dip"
+            android:singleLine="true"
+            android:text="N/A"
+            android:textColor="@android:color/white"
+            android:textSize="20.0sp" />
+        <!--天气情况-->
+        <TextView
+            android:id="@+id/week_climate4"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/week_temperature4"
+            android:layout_marginLeft="5.0dip"
+            android:singleLine="true"
+            android:text="N/A"
+            android:textColor="@android:color/white"
+            android:textSize="20.0sp" />
+        <!--风力情况-->
+        <TextView
+            android:id="@+id/week_wind4"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/week_climate4"
+            android:layout_marginLeft="5.0dip"
+            android:singleLine="true"
+            android:text="N/A"
+            android:textColor="@android:color/white"
+            android:textSize="20.0sp" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1">
+        <!--今日星期-->
+        <TextView
+            android:id="@+id/week_date5"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="5.0dip"
+            android:singleLine="true"
+            android:text="N/A"
+            android:textColor="@android:color/white"
+            android:textSize="20.0sp" />
+        <!--温度范围-->
+        <TextView
+            android:id="@+id/week_temperature5"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/week_date5"
+            android:layout_marginLeft="5.0dip"
+            android:singleLine="true"
+            android:text="N/A"
+            android:textColor="@android:color/white"
+            android:textSize="20.0sp" />
+        <!--天气情况-->
+        <TextView
+            android:id="@+id/week_climate5"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/week_temperature5"
+            android:layout_marginLeft="5.0dip"
+            android:singleLine="true"
+            android:text="N/A"
+            android:textColor="@android:color/white"
+            android:textSize="20.0sp" />
+        <!--风力情况-->
+        <TextView
+            android:id="@+id/week_wind5"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/week_climate5"
+            android:layout_marginLeft="5.0dip"
+            android:singleLine="true"
+            android:text="N/A"
+            android:textColor="@android:color/white"
+            android:textSize="20.0sp" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1">
+        <!--今日星期-->
+        <TextView
+            android:id="@+id/week_date6"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="5.0dip"
+            android:singleLine="true"
+            android:text="N/A"
+            android:textColor="@android:color/white"
+            android:textSize="20.0sp" />
+        <!--温度范围-->
+        <TextView
+            android:id="@+id/week_temperature6"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/week_date6"
+            android:layout_marginLeft="5.0dip"
+            android:singleLine="true"
+            android:text="N/A"
+            android:textColor="@android:color/white"
+            android:textSize="20.0sp" />
+        <!--天气情况-->
+        <TextView
+            android:id="@+id/week_climate6"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/week_temperature6"
+            android:layout_marginLeft="5.0dip"
+            android:singleLine="true"
+            android:text="N/A"
+            android:textColor="@android:color/white"
+            android:textSize="20.0sp" />
+        <!--风力情况-->
+        <TextView
+            android:id="@+id/week_wind6"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/week_climate6"
+            android:layout_marginLeft="5.0dip"
+            android:singleLine="true"
+            android:text="N/A"
+            android:textColor="@android:color/white"
+            android:textSize="20.0sp" />
+    </RelativeLayout>
+
+</LinearLayout>

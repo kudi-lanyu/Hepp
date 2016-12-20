@@ -12,7 +12,7 @@ import android.widget.ImageView;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.edu.pku.mengliang.MyAdapter.viewPagerAdapter_guide;
+import cn.edu.pku.mengliang.MyAdapter.ViewPagerAdapter_guide;
 import cn.edu.pku.mengliang.hepp.MainActivity;
 import cn.edu.pku.mengliang.hepp.R;
 
@@ -22,7 +22,7 @@ import cn.edu.pku.mengliang.hepp.R;
 
 public class guide extends Activity implements ViewPager.OnPageChangeListener {
     private ViewPager vp;
-    private viewPagerAdapter_guide vpAdapter;
+    private ViewPagerAdapter_guide vpAdapter;
     private List<View> views;
     private ImageView[] dots;
     private int[] ids = {R.id.iv1, R.id.iv2, R.id.iv3};
@@ -62,7 +62,7 @@ public class guide extends Activity implements ViewPager.OnPageChangeListener {
         views.add(inflater.inflate(R.layout.guide2, null));
         views.add(inflater.inflate(R.layout.guide3, null));
 
-        vpAdapter = new viewPagerAdapter_guide(views, this);
+        vpAdapter = new ViewPagerAdapter_guide(views, this);
         vp = (ViewPager) findViewById(R.id.viewpager_guide);
         vp.setAdapter(vpAdapter);
         vp.setOnPageChangeListener(this);

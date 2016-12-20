@@ -1,6 +1,9 @@
 package cn.edu.pku.mengliang.MyAdapter;
 
 import android.content.Context;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,10 +14,11 @@ import java.util.List;
  * Created by rwxn on 2016/11/29.
  */
 
-public class ViewPagerAdapter_guide extends PagerAdapter{
+public class ViewPagerAdapter_forecastWeather extends PagerAdapter {
     private List<View> views;
     private Context context;
-    public ViewPagerAdapter_guide(List<View> views, Context context) {
+
+    public ViewPagerAdapter_forecastWeather(List<View> views, Context context) {
         this.views = views;
         this.context = context;
     }
@@ -34,6 +38,8 @@ public class ViewPagerAdapter_guide extends PagerAdapter{
     public void destroyItem(ViewGroup container, int position, Object object) {
         container.removeView(views.get(position));
     }
+
+
 
     @Override
     public boolean isViewFromObject(View view, Object object) {
