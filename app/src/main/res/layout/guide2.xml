@@ -3,5 +3,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#ff99">
-
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="右左右左右左"
+        android:gravity="center"
+        android:textSize="20dip"
+        android:textColor="#003399"/>
 </LinearLayout>

@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.edu.pku.mengliang.MyAdapter.ViewPagerAdapter_guide;
-import cn.edu.pku.mengliang.hepp.MainActivity;
+import cn.edu.pku.mengliang.hepp.Hepp;
 import cn.edu.pku.mengliang.hepp.R;
 
 /**
@@ -39,7 +39,7 @@ public class guide extends Activity implements ViewPager.OnPageChangeListener {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent();
-                intent.setClass(guide.this, MainActivity.class);
+                intent.setClass(guide.this, Hepp.class);
                 startActivity(intent);
                 finish();
             }

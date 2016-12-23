@@ -22,8 +22,6 @@ import java.util.List;
 import cn.edu.pku.mengliang.app.MyApplication;
 import cn.edu.pku.mengliang.bean.City;
 
-import static android.R.attr.editable;
-
 /**
  * Created by rwxn on 2016/10/18.
  */
