@@ -15,8 +15,10 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.baidu.location.BDLocation;
 import com.baidu.location.BDLocationListener;
 import com.baidu.location.LocationClient;
+import com.baidu.location.LocationClientOption;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -32,8 +34,9 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.edu.pku.mengliang.Listener.MyLocationListener;
 import cn.edu.pku.mengliang.MyAdapter.ViewPagerAdapter_forecastWeather;
+import cn.edu.pku.mengliang.app.MyApplication;
+import cn.edu.pku.mengliang.bean.City;
 import cn.edu.pku.mengliang.bean.ForecastWeather;
 import cn.edu.pku.mengliang.bean.TodayWeather;
 import cn.edu.pku.mengliang.guide.guide;
@@ -45,29 +48,7 @@ import cn.edu.pku.mengliang.util.NetUtil;
 public class Hepp extends Activity implements View.OnClickListener, ViewPager.OnPageChangeListener {
     private static final int UPDATE_TODAY_WEATHER = 1;
 
-    private static boolean is_First_use = true;
-
-    @Override
-    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-    }
-
-    @Override
-    public void onPageSelected(int position) {
-        for (int j = 0; j < ids.length; j++) {
-            if (j == position) {
-                dots[j].setImageResource(R.drawable.page_indicator_focused);
-            } else {
-                dots[j].setImageResource(R.drawable.page_indicator_unfocused);
-            }
-        }
-    }
-
-    @Override
-    public void onPageScrollStateChanged(int state) {
-
-    }
-
+    //顶部标题控件
     private ImageView mUpdateBtn;
     private ImageView shareBtn;
     private ImageView locationBtn;
@@ -75,6 +56,7 @@ public class Hepp extends Activity implements View.OnClickListener, ViewPager.On
 
     private ImageView mCitySelect;
 
+    //天气信息控件
     private TextView cityTv, timeTv, humidityTv, weekTv, wenduTv, pmDataTv, pmQualityTv, temperatureTv, climateTv, windTv, city_name_Tv;
     private ImageView weatherImg, pmImg;
 
@@ -102,6 +84,31 @@ public class Hepp extends Activity implements View.OnClickListener, ViewPager.On
     public LocationClient mLocationClient = null;
     public BDLocationListener myListener = new MyLocationListener();
 
+    /*
+    guide
+     */
+    private static boolean is_First_use = true;
+
+    @Override
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+    }
+
+    @Override
+    public void onPageSelected(int position) {
+        for (int j = 0; j < ids.length; j++) {
+            if (j == position) {
+                dots[j].setImageResource(R.drawable.page_indicator_focused);
+            } else {
+                dots[j].setImageResource(R.drawable.page_indicator_unfocused);
+            }
+        }
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int state) {
+
+    }
 
     private Handler mHandler = new Handler() {
         public void handleMessage(android.os.Message msg) {
@@ -122,12 +129,12 @@ public class Hepp extends Activity implements View.OnClickListener, ViewPager.On
 
 
     @Override
-
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.weather_info);
-//        setTitle("myweather");
-
+        /*
+           guide
+           */
         SharedPreferences sharedPreferences = getSharedPreferences("first_about_guide", Hepp.MODE_PRIVATE);
 
         is_First_use = sharedPreferences.getBoolean("is_First_use", true);//获取is_First_use的值，若没有这个key的内容则返回一个默认的boolean
@@ -137,18 +144,16 @@ public class Hepp extends Activity implements View.OnClickListener, ViewPager.On
             startActivity(intent);
         }
 
+        //分享
         shareBtn = (ImageView) findViewById(R.id.title_share);
         shareBtn.setOnClickListener(this);
 
-
+        //更新
         mUpdateBtn = (ImageView) findViewById(R.id.title_update_btn);
         mUpdateBtn.setOnClickListener(this);
         mUpdateBtnProgress = (ProgressBar) findViewById(R.id.title_update_btn1);
 
-        locationBtn = (ImageView) findViewById(R.id.title_location);
-        locationBtn.setOnClickListener(this);
-
-
+        //提示网络状态
         if (NetUtil.getNetworkState(this) != NetUtil.NETWORN_NONE) {
             Log.d("myWeather", "网络OK！");
             Toast.makeText(Hepp.this, "网络OK！", Toast.LENGTH_LONG).show();
@@ -157,45 +162,53 @@ public class Hepp extends Activity implements View.OnClickListener, ViewPager.On
             Toast.makeText(Hepp.this, "网络挂了！", Toast.LENGTH_LONG).show();
         }
 
+        //城市选择
         mCitySelect = (ImageView) findViewById(R.id.title_city_manager);
         mCitySelect.setOnClickListener(this);
 
+        //初始化界面
         initView();
-
+        //viewpager + adapter
         initWeekViews();
-
+        //绑定控件
         initForecastDate();
-
         initdots();
 
-
+        //位置功能
+        locationBtn = (ImageView) findViewById(R.id.title_location);
+        locationBtn.setOnClickListener(this);
         //initLocation();
         mLocationClient = new LocationClient(getApplicationContext());     //声明LocationClient类
         mLocationClient.registerLocationListener(myListener);    //注册监听函数
-        //开始定位
-        mLocationClient.start();
     }
 
-//    //设置定位参数包括：定位模式（高精度定位模式、低功耗定位模式和仅用设备定位模式），返回坐标类型，是否打开GPS，是否返回地址信息、位置语义化信息、POI信息等等。
-//    private void initLocation() {
-//        LocationClientOption option = new LocationClientOption();
-//        option.setLocationMode(LocationClientOption.LocationMode.Hight_Accuracy
-//        );//可选，默认高精度，设置定位模式，高精度，低功耗，仅设备
-//        option.setCoorType("bd09ll");//可选，默认gcj02，设置返回的定位结果坐标系
-//        int span = 1000;
-//        option.setScanSpan(span);//可选，默认0，即仅定位一次，设置发起定位请求的间隔需要大于等于1000ms才是有效的
-//        option.setIsNeedAddress(true);//可选，设置是否需要地址信息，默认不需要
-//        option.setOpenGps(true);//可选，默认false,设置是否使用gps
-//        option.setLocationNotify(true);//可选，默认false，设置是否当GPS有效时按照1S/1次频率输出GPS结果
-//        option.setIsNeedLocationDescribe(true);//可选，默认false，设置是否需要位置语义化结果，可以在BDLocation.getLocationDescribe里得到，结果类似于“在北京天安门附近”
-//        option.setIsNeedLocationPoiList(true);//可选，默认false，设置是否需要POI结果，可以在BDLocation.getPoiList里得到
-//        option.setIgnoreKillProcess(false);//可选，默认true，定位SDK内部是一个SERVICE，并放到了独立进程，设置是否在stop的时候杀死这个进程，默认不杀死
-//        option.SetIgnoreCacheException(false);//可选，默认false，设置是否收集CRASH信息，默认收集
-//        option.setEnableSimulateGps(false);//可选，默认false，设置是否需要过滤GPS仿真结果，默认需要
-//        mLocationClient.setLocOption(option);
-//    }
+    @Override
+    protected void onStop() {
+        //结束定位
+        mLocationClient.stop();
+        super.onStop();
+    }
 
+    //设置定位参数包括：定位模式（高精度定位模式、低功耗定位模式和仅用设备定位模式），返回坐标类型，是否打开GPS，是否返回地址信息、位置语义化信息、POI信息等等。
+    private void initLocation() {
+        LocationClientOption option = new LocationClientOption();
+        option.setLocationMode(LocationClientOption.LocationMode.Hight_Accuracy
+        );//可选，默认高精度，设置定位模式，高精度，低功耗，仅设备
+        option.setCoorType("bd09ll");//可选，默认gcj02，设置返回的定位结果坐标系
+        int span = 1000;
+        option.setScanSpan(span);//可选，默认0，即仅定位一次，设置发起定位请求的间隔需要大于等于1000ms才是有效的
+        option.setIsNeedAddress(true);//可选，设置是否需要地址信息，默认不需要
+        option.setOpenGps(true);//可选，默认false,设置是否使用gps
+        option.setLocationNotify(true);//可选，默认false，设置是否当GPS有效时按照1S/1次频率输出GPS结果
+        option.setIsNeedLocationDescribe(true);//可选，默认false，设置是否需要位置语义化结果，可以在BDLocation.getLocationDescribe里得到，结果类似于“在北京天安门附近”
+        option.setIsNeedLocationPoiList(true);//可选，默认false，设置是否需要POI结果，可以在BDLocation.getPoiList里得到
+        option.setIgnoreKillProcess(false);//可选，默认true，定位SDK内部是一个SERVICE，并放到了独立进程，设置是否在stop的时候杀死这个进程，默认不杀死
+        option.SetIgnoreCacheException(false);//可选，默认false，设置是否收集CRASH信息，默认收集
+        option.setEnableSimulateGps(false);//可选，默认false，设置是否需要过滤GPS仿真结果，默认需要
+        mLocationClient.setLocOption(option);
+    }
 
+    //绑定控件
     private void initForecastDate() {
         week_date1 = (TextView) views.get(0).findViewById(R.id.week_date);
         week_temperture1 = (TextView) views.get(0).findViewById(R.id.week_temperature);
@@ -252,6 +265,7 @@ public class Hepp extends Activity implements View.OnClickListener, ViewPager.On
 
     }
 
+    //初始化界面
     void initView() {
         cityTv = (TextView) findViewById(R.id.city);
         timeTv = (TextView) findViewById(R.id.time);
@@ -282,7 +296,6 @@ public class Hepp extends Activity implements View.OnClickListener, ViewPager.On
         windTv.setText("N/A");
     }
 
-
     @Override
     public void onClick(View view) {
         if (view.getId() == R.id.title_city_manager) {
@@ -298,25 +311,39 @@ public class Hepp extends Activity implements View.OnClickListener, ViewPager.On
             startActivity(Intent.createChooser(intent, "share text to ..."));
         }
         if (view.getId() == R.id.title_location) {
-            //更新城市cityCode_for_local
-            String cityCode_for_local = mLocationClient.getLastKnownLocation().getCityCode();
-            //Log.d("myWeather",cityCode_for_local);
-            SharedPreferences sharedPreferences = getSharedPreferences("config", MODE_PRIVATE);
-            if (cityCode_for_local != null) {
-                sharedPreferences.edit().putString("cityCode_for_local", cityCode_for_local).commit();
-            }
-            //询问用户是否要获取新地址的天气
-            Intent intent = new Intent(this, LocationActivity.class);
-            startActivity(intent);
+            //启动更新当地天气操作
 
-            if (NetUtil.getNetworkState(this) != NetUtil.NETWORN_NONE) {
-                Log.d("myWeather", "网络OK！");
-                queryWeatherCode(sharedPreferences.getString("main_city_code","101010100"));
+            Log.d("myWeather", "你已经选择更新当前城市天气操作!");
+            mUpdateBtn.setVisibility(View.INVISIBLE);
+            mUpdateBtnProgress.setVisibility(View.VISIBLE);
+            //开始定位
+            initLocation();
+            mLocationClient.start();
 
-            } else {
-                Log.d("myWeather", "网络挂了！");
-                Toast.makeText(Hepp.this, "网络挂了！", Toast.LENGTH_LONG).show();
-            }
+
+            //直接更新当前定位的位置城市的citycode并更新对应的天气
+
+
+//            //更新城市cityCode_for_local
+//            String cityCode_for_local = mLocationClient.getLastKnownLocation().getCityCode();
+//            //Log.d("myWeather",cityCode_for_local);
+//            SharedPreferences sharedPreferences = getSharedPreferences("config", MODE_PRIVATE);
+//            if (cityCode_for_local != null) {
+//                sharedPreferences.edit().putString("cityCode_for_local", cityCode_for_local).commit();
+//            }
+//            //询问用户是否要获取新地址的天气
+//            Intent intent = new Intent(this, LocationActivity.class);
+//            startActivity(intent);
+//
+//
+//            if (NetUtil.getNetworkState(this) != NetUtil.NETWORN_NONE) {
+//                Log.d("myWeather", "网络OK！");
+//                queryWeatherCode(sharedPreferences.getString("main_city_code", "101010100"));
+//
+//            } else {
+//                Log.d("myWeather", "网络挂了！");
+//                Toast.makeText(Hepp.this, "网络挂了！", Toast.LENGTH_LONG).show();
+//            }
         }
 
         if (view.getId() == R.id.title_update_btn) {
@@ -339,6 +366,53 @@ public class Hepp extends Activity implements View.OnClickListener, ViewPager.On
                 Log.d("myWeather", "网络挂了！");
                 Toast.makeText(Hepp.this, "网络挂了！", Toast.LENGTH_LONG).show();
             }
+        }
+    }
+
+    public class MyLocationListener implements BDLocationListener {
+
+        //获取定位后的结果
+        @Override
+        public void onReceiveLocation(BDLocation location) {
+//            Log.d("hello",location.getCityCode());
+//            Log.d("hello",location.getAddrStr());
+//            Log.d("hello",location.getCity());
+//            Log.d("hello",location.getAddress().toString());
+//
+//            Toast.makeText(Hepp.this,location.getCityCode(),Toast.LENGTH_SHORT).show();
+//            Toast.makeText(Hepp.this,location.getAddrStr(),Toast.LENGTH_SHORT).show();
+//            Toast.makeText(Hepp.this,location.getCity(),Toast.LENGTH_SHORT).show();//北京市
+//            Toast.makeText(Hepp.this,location.getAddress().toString(),Toast.LENGTH_SHORT).show();
+//            Toast.makeText(Hepp.this,location.getStreet(),Toast.LENGTH_SHORT).show();
+//            Toast.makeText(Hepp.this,location.getDistrict(),Toast.LENGTH_SHORT).show();//大兴区
+
+            Toast.makeText(Hepp.this, location.getCity(), Toast.LENGTH_SHORT).show();//北京市
+            Toast.makeText(Hepp.this, location.getDistrict(), Toast.LENGTH_SHORT).show();//大兴区
+
+            Integer integer = location.getCity().length();
+            String s = location.getCity().substring(0, integer - 1);
+            Toast.makeText(Hepp.this, s, Toast.LENGTH_SHORT).show();
+
+            Integer integer1 = location.getDistrict().length();
+            String t = location.getDistrict().substring(0, integer1 - 1);
+            Toast.makeText(Hepp.this, t, Toast.LENGTH_SHORT).show();
+
+            MyApplication App;
+            List<City> data = new ArrayList<City>();
+
+            App = (MyApplication) getApplication();
+            data = App.getCityList();
+            int i = 0;
+            while (t != null && i < data.size()) {
+                if (data.get(i).getCity().toString().equals(t)) {
+                    SharedPreferences sharedPreferences = getSharedPreferences("config", MODE_PRIVATE);
+                    sharedPreferences.edit().putString("main_city_code", data.get(i).getNumber()).commit();
+
+                    queryWeatherCode(data.get(i).getNumber());
+                }
+                i++;
+            }
+            mLocationClient.stop();
         }
     }
 
