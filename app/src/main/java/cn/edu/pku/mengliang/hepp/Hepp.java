@@ -378,16 +378,12 @@ public class Hepp extends Activity implements View.OnClickListener, ViewPager.On
 //            Log.d("hello",location.getAddrStr());
 //            Log.d("hello",location.getCity());
 //            Log.d("hello",location.getAddress().toString());
-//
 //            Toast.makeText(Hepp.this,location.getCityCode(),Toast.LENGTH_SHORT).show();
 //            Toast.makeText(Hepp.this,location.getAddrStr(),Toast.LENGTH_SHORT).show();
 //            Toast.makeText(Hepp.this,location.getCity(),Toast.LENGTH_SHORT).show();//北京市
 //            Toast.makeText(Hepp.this,location.getAddress().toString(),Toast.LENGTH_SHORT).show();
 //            Toast.makeText(Hepp.this,location.getStreet(),Toast.LENGTH_SHORT).show();
 //            Toast.makeText(Hepp.this,location.getDistrict(),Toast.LENGTH_SHORT).show();//大兴区
-
-            Toast.makeText(Hepp.this, location.getCity(), Toast.LENGTH_SHORT).show();//北京市
-            Toast.makeText(Hepp.this, location.getDistrict(), Toast.LENGTH_SHORT).show();//大兴区
 
             Integer integer = location.getCity().length();
             String s = location.getCity().substring(0, integer - 1);

@@ -34,6 +34,10 @@ dependencies {
     compile 'com.android.support:appcompat-v7:24.2.1'
     compile files('libs/BaiduLBS_Android.jar')
     compile files('libs/BaiduLBS_Android.jar')
+
+    //汉字转拼音 的类库
+    compile 'com.belerweb:pinyin4j:2.5.0'
 }
+
 
 
